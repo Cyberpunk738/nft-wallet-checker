@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Wallet Web3 Viewer</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">
+                <i class="fas fa-wallet"></i>
+                NFT Viewer
+            </h1>
+            
+            <!-- Dark mode toggle -->
+            <button id="darkModeToggle" class="dark-mode-btn">
+                <i class="fas fa-moon" id="darkModeIcon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="main">
+        <!-- Wallet Connection Card -->
+        <div class="wallet-card">
+            <!-- Connection Status -->
+            <div class="connection-status" id="connectionStatus">
+                <i class="fas fa-plug status-icon"></i>
+                <p>Connect your wallet to get started</p>
+            </div>
+            
+            <!-- Connect Button -->
+            <button id="connectBtn" class="btn btn-primary btn-full">
+                <i class="fas fa-wallet"></i>
+                Connect Wallet
+            </button>
+            
+            <!-- Disconnect Button (hidden initially) -->
+            <button id="disconnectBtn" class="btn btn-danger btn-full hidden">
+                <i class="fas fa-sign-out-alt"></i>
+                Disconnect
+            </button>
+            
+            <!-- Wallet Details (hidden initially) -->
+            <div id="walletDetails" class="wallet-details hidden">
+                <!-- Connected Wallet Type -->
+                <div class="detail-item">
+                    <label>
+                        <i class="fas fa-wallet"></i>
+                        Connected Wallet
+                    </label>
+                    <span id="walletType"></span>
+                </div>
+                
+                <!-- Wallet Address -->
+                <div class="detail-item">
+                    <label>
+                        <i class="fas fa-address-card"></i>
+                        Wallet Address
+                    </label>
+                    <div class="address-container">
+                        <span id="walletAddress" class="address"></span>
+                        <button id="copyAddressBtn" class="btn-icon" title="Copy address">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- ETH Balance -->
+                <div class="detail-item">
+                    <label>
+                        <i class="fab fa-ethereum"></i>
+                        ETH Balance
+                    </label>
+                    <div class="balance-container">
+                        <span id="ethBalance" class="balance"></span>
+                        <span class="balance-unit">ETH</span>
+                        <button id="refreshBalanceBtn" class="btn-icon" title="Refresh balance">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Network Info -->
+                <div class="detail-item">
+                    <label>
+                        <i class="fas fa-network-wired"></i>
+                        Network
+                    </label>
+                    <span id="networkName"></span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- NFT Collection Section -->
+        <div id="nftSection" class="nft-section hidden">
+            <div class="nft-header">
+                <h2>
+                    <i class="fas fa-images"></i>
+                    Your NFT Collection
+                </h2>
+                <button id="refreshNftsBtn" class="btn btn-secondary">
+                    <i class="fas fa-sync-alt"></i>
+                    Refresh
+                </button>
+            </div>
+            
+            <!-- Loading state -->
+            <div id="nftLoading" class="nft-loading hidden">
+                <div class="spinner"></div>
+                <p>Loading your NFTs...</p>
+            </div>
+            
+            <!-- NFT Grid -->
+            <div id="nftGrid" class="nft-grid"></div>
+            
+            <!-- No NFTs message -->
+            <div id="noNftsMessage" class="no-nfts hidden">
+                <i class="fas fa-image"></i>
+                <p>No NFTs found in your wallet</p>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Wallet Selection Modal -->
+    <div id="walletModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Connect Wallet</h3>
+                <button id="closeModal" class="btn-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="wallet-options">
+                <button class="wallet-option" data-wallet="metamask">
+                    <div class="wallet-icon metamask-icon">
+                        <svg viewBox="0 0 40 37" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M37.5 0L22.5 11.25L25.25 4.75L37.5 0Z" fill="#E17726"/>
+                            <path d="M2.5 0L17.25 11.5L14.75 4.75L2.5 0Z" fill="#E27625"/>
+                            <path d="M32 26.75L28 33L36.75 35.25L39 27L32 26.75Z" fill="#E27625"/>
+                            <path d="M1.25 27L3.5 35.25L12.25 33L8.25 26.75L1.25 27Z" fill="#E27625"/>
+                            <path d="M11.75 16L9.75 19.25L18.25 19.75L18 10.5L11.75 16Z" fill="#E27625"/>
+                            <path d="M28.25 16L21.75 10.25L21.75 19.75L30.25 19.25L28.25 16Z" fill="#E27625"/>
+                            <path d="M12.25 33L17.5 30.5L13 27.25L12.25 33Z" fill="#E27625"/>
+                            <path d="M22.5 30.5L27.75 33L27 27.25L22.5 30.5Z" fill="#E27625"/>
+                        </svg>
+                    </div>
+                    <div class="wallet-info">
+                        <span class="wallet-name">MetaMask</span>
+                        <span class="wallet-desc">Browser Extension</span>
+                    </div>
+                </button>
+                
+                <button class="wallet-option" data-wallet="walletconnect">
+                    <div class="wallet-icon walletconnect-icon">
+                        <svg viewBox="0 0 40 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8.19 4.73c6.35-6.22 16.66-6.22 23.01 0l.76.75c.32.31.32.82 0 1.13l-2.6 2.55c-.16.16-.42.16-.58 0l-1.05-1.03c-4.43-4.34-11.62-4.34-16.05 0l-1.12 1.1c-.16.16-.42.16-.58 0L7.38 6.68c-.32-.31-.32-.82 0-1.13l.81-.82zm28.41 5.27l2.32 2.27c.32.31.32.82 0 1.13L26.13 25.5c-.32.31-.84.31-1.16 0L15.24 15.77c-.08-.08-.21-.08-.29 0L5.22 25.5c-.32.31-.84.31-1.16 0L-8.73 13.4c-.32-.31-.32-.82 0-1.13l2.32-2.27c.32-.31.84-.31 1.16 0l9.73 9.73c.08.08.21.08.29 0l9.73-9.73c.32-.31.84-.31 1.16 0l9.73 9.73c.08.08.21.08.29 0l9.73-9.73c.32-.31.84-.31 1.16 0z" fill="#3B99FC"/>
+                        </svg>
+                    </div>
+                    <div class="wallet-info">
+                        <span class="wallet-name">WalletConnect</span>
+                        <span class="wallet-desc">Mobile Wallets</span>
+                    </div>
+                </button>
+                
+                <button class="wallet-option" data-wallet="coinbase">
+                    <div class="wallet-icon coinbase-icon">
+                        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="20" cy="20" r="20" fill="#0052FF"/>
+                            <path d="M20 4C11.16 4 4 11.16 4 20s7.16 16 16 16 16-7.16 16-16S28.84 4 20 4zm0 26c-5.52 0-10-4.48-10-10s4.48-10 10-10 10 4.48 10 10-4.48 10-10 10z" fill="white"/>
+                            <path d="M20 14c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 8c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" fill="white"/>
+                        </svg>
+                    </div>
+                    <div class="wallet-info">
+                        <span class="wallet-name">Coinbase Wallet</span>
+                        <span class="wallet-desc">Self-Custody</span>
+                    </div>
+                </button>
+                
+                <button class="wallet-option" data-wallet="trust">
+                    <div class="wallet-icon trust-icon">
+                        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="20" cy="20" r="20" fill="#3375BB"/>
+                            <path d="M20 8l8 4v8c0 5-3.5 9.5-8 11-4.5-1.5-8-6-8-11v-8l8-4z" fill="white"/>
+                            <path d="M20 12l5 2.5v5c0 3-2 6-5 7-3-1-5-4-5-7v-5l5-2.5z" fill="#3375BB"/>
+                        </svg>
+                    </div>
+                    <div class="wallet-info">
+                        <span class="wallet-name">Trust Wallet</span>
+                        <span class="wallet-desc">Mobile First</span>
+                    </div>
+                </button>
+                
+                <button class="wallet-option" data-wallet="okx">
+                    <div class="wallet-icon okx-icon">
+                        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="40" height="40" rx="8" fill="#000000"/>
+                            <path d="M12 12h6v6h-6v-6zm10 0h6v6h-6v-6zm-10 10h6v6h-6v-6zm10 0h6v6h-6v-6z" fill="white"/>
+                            <path d="M16 16h8v8h-8v-8z" fill="#000000"/>
+                            <path d="M18 18h4v4h-4v-4z" fill="white"/>
+                        </svg>
+                    </div>
+                    <div class="wallet-info">
+                        <span class="wallet-name">OKX Wallet</span>
+                        <span class="wallet-desc">Multi-Chain</span>
+                    </div>
+                </button>
+                
+                <button class="wallet-option" data-wallet="bitget">
+                    <div class="wallet-icon bitget-icon">
+                        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="20" cy="20" r="20" fill="#00D4AA"/>
+                            <path d="M20 8l6 6-6 6-6-6 6-6zm0 8l6 6-6 6-6-6 6-6z" fill="white"/>
+                            <path d="M14 20l6-6v12l-6-6zm12 0l-6-6v12l6-6z" fill="white" opacity="0.7"/>
+                        </svg>
+                    </div>
+                    <div class="wallet-info">
+                        <span class="wallet-name">Bitget Wallet</span>
+                        <span class="wallet-desc">DeFi & Trading</span>
+                    </div>
+                </button>
+                
+                <button class="wallet-option" data-wallet="phantom">
+                    <div class="wallet-icon phantom-icon">
+                        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="40" height="40" rx="8" fill="url(#phantomGradient)"/>
+                            <path d="M20 8c6.627 0 12 5.373 12 12 0 6.627-5.373 12-12 12s-12-5.373-12-12c0-6.627 5.373-12 12-12z" fill="white"/>
+                            <circle cx="16" cy="18" r="2" fill="#AB9FF2"/>
+                            <circle cx="24" cy="18" r="2" fill="#AB9FF2"/>
+                            <path d="M14 24c0-2.21 1.79-4 4-4h4c2.21 0 4 1.79 4 4" stroke="#AB9FF2" stroke-width="2" fill="none"/>
+                            <defs>
+                                <linearGradient id="phantomGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#AB9FF2"/>
+                                    <stop offset="100%" stop-color="#7C3AED"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <div class="wallet-info">
+                        <span class="wallet-name">Phantom</span>
+                        <span class="wallet-desc">Solana & Ethereum</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Notifications -->
+    <div id="errorToast" class="toast toast-error hidden">
+        <div class="toast-content">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="errorMessage"></span>
+        </div>
+    </div>
+    
+    <div id="successToast" class="toast toast-success hidden">
+        <div class="toast-content">
+            <i class="fas fa-check-circle"></i>
+            <span id="successMessage"></span>
+        </div>
+    </div>
+
+    <!-- Custom JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
