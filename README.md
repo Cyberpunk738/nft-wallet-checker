@@ -1,6 +1,6 @@
 # Multi-Wallet Web3 Viewer
 
-A complete Web3 application with support for multiple wallets including MetaMask, WalletConnect, Coinbase Wallet, and Trust Wallet. Displays wallet details and NFT collections with a modern, responsive design.
+A complete Web3 application with support for multiple wallets including MetaMask, WalletConnect, Coinbase Wallet, and Trust Wallet. Displays wallet detail and NFT collections with a modern, responsive design.
 
 ## Features
 
