@@ -10,7 +10,7 @@ A complete Web3 application with support for multiple wallets including MetaMask
 - **Coinbase Wallet** - Coinbase's self-custody wallet
 - **Trust Wallet** - Mobile-first crypto wallet
 - Automatic wallet detection and reconnection
-- Account and network change handling
+- Account and network change handling.
 
 ✅ **Wallet Information Display**
 - Connected wallet type identification
