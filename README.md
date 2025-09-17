@@ -33,7 +33,7 @@ A complete Web3 application with support for multiple wallets including MetaMask
 - **Smooth Animations** - CSS transitions and hover effects
 - **Toast Notifications** - Success/error feedback
 - **Modal Interface** - Clean wallet selection
-- **Accessibility** - Keyboard navigation and focus states
+- **Accessibility** - Keyboard navigation and focus state
 
 ✅ **Error Handling**
 - Wallet not installed detection
